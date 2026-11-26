@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Orientation</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #111;
+            color: #eee;
+            text-align: center;
+        }
+
+        button {
+            font-size: 1.1rem;
+            padding: 10px 18px;
+            margin: 6px;
+        }
+
+        #direction {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 16px 0 8px;
+        }
+
+        .row {
+            font-size: 1.3rem;
+            margin: 8px 0;
+        }
+
+        #status {
+            color: #aaa;
+            min-height: 1.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Orientation</h1>
+
+    <div id="permission" hidden>
+        <p>This page needs access to your device motion sensors.</p>
+        <button id="permissionBtn">Allow sensor access</button>
+    </div>
+
+    <button id="startBtn">Start sensors</button>
+    <button id="calibrateBtn">Set current direction as North</button>
+    <p id="status">Press "Start sensors" to begin.</p>
+
+    <div id="direction">--</div>
+    <div class="row">Degrees from North: <span id="degrees">--</span>&deg;</div>
+    <div class="row">Top edge points: <span id="vertical">--</span></div>
+    <div class="row">Screen faces: <span id="screen">--</span></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
