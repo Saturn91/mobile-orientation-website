@@ -61,66 +61,66 @@
         // Screen direction: the screen normal points to the sky (Up) or to the ground (Down).
         const screenUp = Math.cos(toRad(beta)) * Math.cos(toRad(gamma)) > 0;
         el.screen.textContent = screenUp ? 'Up' : 'Down';
-        // iOS 13+ requires an explicit permission request from a user gesture.
-        const needsPermission = typeof DeviceOrientationEvent !== 'undefined' &&
-            typeof DeviceOrientationEvent.requestPermission === 'function';
+    }
 
-        el.permission.hidden = !needsPermission;
+    // iOS 13+ requires an explicit permission request from a user gesture.
+    const needsPermission = typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function';
 
-        function startListening() {
-            if (!listening) {
-                window.addEventListener('deviceorientation', onOrientation);
-                listening = true;
-            }
+    el.permission.hidden = !needsPermission;
 
-            el.status.textContent = 'Waiting for sensor data...';
-
-            setTimeout(() => {
-                if (!receivedData) {
-                    el.status.textContent = 'No sensor data received. Your browser may block sensors on file://; try HTTPS hosting.';
-                }
-            }, 2000);
+    function startListening() {
+        if (!listening) {
+            window.addEventListener('deviceorientation', onOrientation);
+            listening = true;
         }
 
-        // Must be called directly from a click handler so the browser accepts the request.
-        async function requestSensorPermission() {
-            if (!needsPermission) return true;
+        el.status.textContent = 'Waiting for sensor data...';
 
-            try {
-                const result = await DeviceOrientationEvent.requestPermission();
-                if (result === 'granted') {
-                    el.permission.hidden = true;
-                    return true;
-                }
-                el.status.textContent = 'Permission denied. Allow motion access in your browser settings and try again.';
-                return false;
-            } catch (err) {
-                el.status.textContent = 'Permission error: ' + err.message;
-                return false;
+        setTimeout(() => {
+            if (!receivedData) {
+                el.status.textContent = 'No sensor data received. Your browser may block sensors on file://; try HTTPS hosting.';
             }
+        }, 2000);
+    }
+
+    // Must be called directly from a click handler so the browser accepts the request.
+    async function requestSensorPermission() {
+        if (!needsPermission) return true;
+
+        try {
+            const result = await DeviceOrientationEvent.requestPermission();
+            if (result === 'granted') {
+                el.permission.hidden = true;
+                return true;
+            }
+            el.status.textContent = 'Permission denied. Allow motion access in your browser settings and try again.';
+            return false;
+        } catch (err) {
+            el.status.textContent = 'Permission error: ' + err.message;
+            return false;
+        }
+    }
+
+    el.permissionBtn.addEventListener('click', async () => {
+        if (await requestSensorPermission()) {
+            startListening();
+        }
+    });
+
+    el.startBtn.addEventListener('click', async () => {
+        if (typeof DeviceOrientationEvent === 'undefined') {
+            el.status.textContent = 'DeviceOrientation is not supported in this browser.';
+            return;
         }
 
-        el.permissionBtn.addEventListener('click', async () => {
-            if (await requestSensorPermission()) {
-                startListening();
-            }
-        });
+        if (!(await requestSensorPermission())) return;
 
-        el.startBtn.addEventListener('click', async () => {
-            if (typeof DeviceOrientationEvent === 'undefined') {
-                el.status.textContent = 'DeviceOrientation is not supported in this browser.';
-                return;
-            }
+        startListening();
+    });
 
-            if (!(await requestSensorPermission())) return;
-
-            startListening(status.textContent = 'No sensor data received. Your browser may block sensors on file://; try HTTPS hosting.';
-        }
-    }, 2000);
-});
-
-el.calibrateBtn.addEventListener('click', () => {
-    pendingNorth = true;
-    el.status.textContent = 'Setting North on next reading...';
-});
-}) ();
+    el.calibrateBtn.addEventListener('click', () => {
+        pendingNorth = true;
+        el.status.textContent = 'Setting North on next reading...';
+    });
+})();
